@@ -1,23 +1,29 @@
-import { create } from 'zustand';
-import { ChatMessage, AIAssistantState } from '@/types';
+import create from 'zustand';
 
-interface AIStore extends AIAssistantState {
-  addMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
-  setIsListening: (value: boolean) => void;
-  setIsSpeaking: (value: boolean) => void;
-  setIsTyping: (value: boolean) => void;
-  setCurrentInput: (value: string) => void;
-  updateSessionMemory: (key: string, value: any) => void;
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
+interface AIStore {
+  messages: Message[];
+  currentInput: string;
+  isListening: boolean;
+  isTyping: boolean;
+  addMessage: (message: Omit<Message, 'id' | 'timestamp'>) => void;
+  setCurrentInput: (input: string) => void;
+  setIsListening: (listening: boolean) => void;
+  setIsTyping: (typing: boolean) => void;
   clearHistory: () => void;
 }
 
 export const useAIStore = create<AIStore>((set) => ({
-  isListening: false,
-  isSpeaking: false,
-  isTyping: false,
   messages: [],
   currentInput: '',
-  sessionMemory: {},
+  isListening: false,
+  isTyping: false,
 
   addMessage: (message) =>
     set((state) => ({
@@ -26,25 +32,14 @@ export const useAIStore = create<AIStore>((set) => ({
         {
           ...message,
           id: `msg-${Date.now()}`,
-          timestamp: Date.now(),
+          timestamp: new Date(),
         },
       ],
     })),
 
-  setIsListening: (value) => set({ isListening: value }),
-  setIsSpeaking: (value) => set({ isSpeaking: value }),
-  setIsTyping: (value) => set({ isTyping: value }),
-  setCurrentInput: (value) => set({ currentInput: value }),
+  setCurrentInput: (input) => set({ currentInput: input }),
+  setIsListening: (listening) => set({ isListening: listening }),
+  setIsTyping: (typing) => set({ isTyping: typing }),
 
-  updateSessionMemory: (key, value) =>
-    set((state) => ({
-      sessionMemory: { ...state.sessionMemory, [key]: value },
-    })),
-
-  clearHistory: () =>
-    set({
-      messages: [],
-      sessionMemory: {},
-      currentInput: '',
-    }),
+  clearHistory: () => set({ messages: [], currentInput: '' }),
 }));

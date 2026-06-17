@@ -1,40 +1,55 @@
-import { create } from 'zustand';
-import { HUDMetrics } from '@/types';
+import create from 'zustand';
+
+interface HUDMetrics {
+  power: number;
+  reactor: number;
+  temperature: number;
+  flight: number;
+  altitude: number;
+  energy: number;
+  weapons: number;
+  communications: number;
+  cpu: number;
+  memory: number;
+}
 
 interface HUDStore {
   metrics: HUDMetrics;
   isVisible: boolean;
-  updateMetric: (key: keyof HUDMetrics, value: number) => void;
-  setVisible: (value: boolean) => void;
-  reset: () => void;
+  updateMetrics: (metrics: Partial<HUDMetrics>) => void;
+  toggleVisibility: () => void;
+  resetMetrics: () => void;
 }
 
-const initialMetrics: HUDMetrics = {
-  power: 95,
-  reactor: 88,
+const defaultMetrics: HUDMetrics = {
+  power: 88,
+  reactor: 92,
   temperature: 65,
-  flight: 100,
-  weapons: 75,
-  communications: 100,
-  cpu: 45,
-  memory: 62,
-  altitude: 12500,
-  energy: 92,
+  flight: 78,
+  altitude: 5000,
+  energy: 85,
+  weapons: 72,
+  communications: 95,
+  cpu: 62,
+  memory: 78,
 };
 
 export const useHUDStore = create<HUDStore>((set) => ({
-  metrics: initialMetrics,
+  metrics: defaultMetrics,
   isVisible: true,
 
-  updateMetric: (key, value) =>
+  updateMetrics: (newMetrics) =>
     set((state) => ({
-      metrics: {
-        ...state.metrics,
-        [key]: Math.min(100, Math.max(0, value)),
-      },
+      metrics: { ...state.metrics, ...newMetrics },
     })),
 
-  setVisible: (value) => set({ isVisible: value }),
+  toggleVisibility: () =>>
+    set((state) => ({
+      isVisible: !state.isVisible,
+    })),
 
-  reset: () => set({ metrics: initialMetrics }),
+  resetMetrics: () =>
+    set({
+      metrics: defaultMetrics,
+    }),
 }));

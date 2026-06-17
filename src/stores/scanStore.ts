@@ -1,22 +1,28 @@
-import { create } from 'zustand';
-import { ScanTarget } from '@/types';
+import create from 'zustand';
+
+interface ScanTarget {
+  id: string;
+  type: 'threat' | 'ally' | 'neutral';
+  position: [number, number, number];
+  distance: number;
+  name: string;
+}
 
 interface ScanStore {
   targets: ScanTarget[];
   isScanningActive: boolean;
-  selectedTargetId: string | null;
+  setScanActive: (active: boolean) => void;
   addTarget: (target: ScanTarget) => void;
   removeTarget: (id: string) => void;
   updateTarget: (id: string, updates: Partial<ScanTarget>) => void;
-  setScanActive: (value: boolean) => void;
-  setSelectedTarget: (id: string | null) => void;
-  clearAllTargets: () => void;
+  clearTargets: () => void;
 }
 
 export const useScanStore = create<ScanStore>((set) => ({
   targets: [],
   isScanningActive: false,
-  selectedTargetId: null,
+
+  setScanActive: (active) => set({ isScanningActive: active }),
 
   addTarget: (target) =>
     set((state) => ({
@@ -30,15 +36,10 @@ export const useScanStore = create<ScanStore>((set) => ({
 
   updateTarget: (id, updates) =>
     set((state) => ({
-      targets: state.targets.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+      targets: state.targets.map((t) =>
+        t.id === id ? { ...t, ...updates } : t
+      ),
     })),
 
-  setScanActive: (value) => set({ isScanningActive: value }),
-  setSelectedTarget: (id) => set({ selectedTargetId: id }),
-
-  clearAllTargets: () =>
-    set({
-      targets: [],
-      selectedTargetId: null,
-    }),
+  clearTargets: () => set({ targets: [] }),
 }));

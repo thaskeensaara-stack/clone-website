@@ -1,13 +1,23 @@
-import { create } from 'zustand';
-import { Mission } from '@/types';
+import create from 'zustand';
+
+interface Mission {
+  id: string;
+  title: string;
+  description: string;
+  objectives: string[];
+  progress: number;
+  status: 'active' | 'completed' | 'failed';
+  logs: string[];
+}
 
 interface MissionStore {
   missions: Mission[];
   activeMissionId: string | null;
-  addMission: (mission: Mission) => void;
+  addMission: (mission: Omit<Mission, 'id'>) => void;
   updateMission: (id: string, updates: Partial<Mission>) => void;
+  removeMission: (id: string) => void;
   setActiveMission: (id: string | null) => void;
-  addLog: (missionId: string, log: string) => void;
+  completeMission: (id: string) => void;
 }
 
 export const useMissionStore = create<MissionStore>((set) => ({
@@ -16,22 +26,36 @@ export const useMissionStore = create<MissionStore>((set) => ({
 
   addMission: (mission) =>
     set((state) => ({
-      missions: [...state.missions, mission],
+      missions: [
+        ...state.missions,
+        {
+          ...mission,
+          id: `mission-${Date.now()}`,
+        },
+      ],
     })),
 
   updateMission: (id, updates) =>
     set((state) => ({
-      missions: state.missions.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+      missions: state.missions.map((m) =>
+        m.id === id ? { ...m, ...updates } : m
+      ),
     })),
 
-  setActiveMission: (id) => set({ activeMissionId: id }),
+  removeMission: (id) =>
+    set((state) => ({
+      missions: state.missions.filter((m) => m.id !== id),
+    })),
 
-  addLog: (missionId, log) =>
+  setActiveMission: (id) =>
+    set({
+      activeMissionId: id,
+    }),
+
+  completeMission: (id) =>
     set((state) => ({
       missions: state.missions.map((m) =>
-        m.id === missionId
-          ? { ...m, logs: [...m.logs, `[${new Date().toLocaleTimeString()}] ${log}`] }
-          : m
+        m.id === id ? { ...m, status: 'completed' as const, progress: 100 } : m
       ),
     })),
 }));

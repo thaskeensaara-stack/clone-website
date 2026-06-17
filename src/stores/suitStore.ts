@@ -1,17 +1,25 @@
-import { create } from 'zustand';
-import { SuitCustomization } from '@/types';
+import create from 'zustand';
+
+interface SuitCustomization {
+  armorColor: string;
+  glowColor: string;
+  energyColor: string;
+  eyeColor: string;
+  materialFinish: 'matte' | 'glossy' | 'metallic';
+  battleDamage: number;
+}
 
 interface SuitStore {
   customization: SuitCustomization;
   updateCustomization: (updates: Partial<SuitCustomization>) => void;
-  reset: () => void;
+  resetCustomization: () => void;
 }
 
 const defaultCustomization: SuitCustomization = {
   armorColor: '#ff6b35',
   glowColor: '#00d4ff',
-  eyeColor: '#ff0000',
-  energyColor: '#00ff41',
+  energyColor: '#00d4ff',
+  eyeColor: '#00d4ff',
   materialFinish: 'metallic',
   battleDamage: 0,
 };
@@ -21,11 +29,11 @@ export const useSuitStore = create<SuitStore>((set) => ({
 
   updateCustomization: (updates) =>
     set((state) => ({
-      customization: {
-        ...state.customization,
-        ...updates,
-      },
+      customization: { ...state.customization, ...updates },
     })),
 
-  reset: () => set({ customization: defaultCustomization }),
+  resetCustomization: () =>
+    set({
+      customization: defaultCustomization,
+    }),
 }));
