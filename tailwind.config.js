@@ -1,9 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+module.exports = {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -15,13 +11,28 @@ export default {
         'iron-purple': '#9d4edd',
       },
       fontFamily: {
-        'futura': ['Futura', 'sans-serif'],
-        'mono': ['IBM Plex Mono', 'monospace'],
+        mono: ['IBM Plex Mono', 'monospace'],
       },
-      boxShadow: {
-        'glow-blue': '0 0 20px rgba(0, 212, 255, 0.5)',
-        'glow-orange': '0 0 20px rgba(255, 107, 53, 0.5)',
-        'glow-purple': '0 0 20px rgba(157, 78, 221, 0.5)',
+      animation: {
+        glow: 'glow 2s infinite',
+        'scan-line': 'scan-line 3s linear infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+      },
+      keyframes: {
+        glow: {
+          '0%': { textShadow: '0 0 10px rgba(0, 212, 255, 0.5)' },
+          '50%': { textShadow: '0 0 20px rgba(0, 212, 255, 1)' },
+          '100%': { textShadow: '0 0 10px rgba(0, 212, 255, 0.5)' },
+        },
+        'scan-line': {
+          '0%': { top: '0%' },
+          '100%': { top: '100%' },
+        },
+        'pulse-glow': {
+          '0%': { boxShadow: '0 0 5px rgba(0, 212, 255, 0.3)' },
+          '50%': { boxShadow: '0 0 20px rgba(0, 212, 255, 0.8)' },
+          '100%': { boxShadow: '0 0 5px rgba(0, 212, 255, 0.3)' },
+        },
       },
     },
   },
